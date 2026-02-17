@@ -1,0 +1,44 @@
+{
+  "project": "rag-sergin",
+  "current_phase": "production_ready",
+  "completed": [
+    "copied_rag_api_structure",
+    "adapted_to_gemini",
+    "express_server",
+    "rag_routes",
+    "query_routes",
+    "validation_middleware",
+    "error_handling",
+    "streaming_support",
+    "chat_interface",
+    "migrated_to_huggingface_embeddings",
+    "installed_transformers_dependency",
+    "fixed_qdrant_timeout_and_memory_issues",
+    "web_scraping_with_cheerio",
+    "url_document_loader",
+    "url_processing_endpoint",
+    "playwright_scraping_integration",
+    "scraper_strategy_pattern",
+    "csv_validation_system",
+    "multiple_qdrant_collections"
+  ],
+  "in_progress": null,
+  "next": [
+    "csv_validation_dashboard_ui",
+    "rate_limiting_for_scraping",
+    "scraping_retry_mechanism",
+    "auto_correction_suggestions"
+  ],
+  "blockers": [],
+  "decisions": {
+    "embeddings": "HuggingFace Transformers local (Xenova/bge-small-en-v1.5, 384 dims, offline)",
+    "llm": "DeepSeek via @langchain/deepseek",
+    "module_system": "ESM (type: module)",
+    "architecture": "Copied from rag-api and adapted",
+    "prompt_language": "Portuguese BR",
+    "scraping": "Strategy Pattern: Cheerio (fast, static) + Playwright (complete, dynamic) with auto-detection",
+    "qdrant_collections": "documents (PDF/EPUB/URL) + csv_validation (CSV validation POC)"
+  },
+  "session_count": 4,
+  "last_context_usage": "~48%"
+}

@@ -1,0 +1,26 @@
+meta {
+  name: RAG Query
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/rag
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "question": "What is the Factory Pattern?",
+    "topK": 3
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.success: eq true
+  res.body.data.question: isString
+  res.body.data.answer: isString
+  res.body.data.sources: isArray
+}

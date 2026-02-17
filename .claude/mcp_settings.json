@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "rag-sergin": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/avanade/Workspace/rag-sergin/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "MCP_RAG_SERVER_URL": "http://localhost:3000"
+      }
+    }
+  }
+}

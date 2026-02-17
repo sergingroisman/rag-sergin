@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Upload Documento</title>
+</head>
+
+<body>
+  <h1>Upload de Documento</h1>
+  <input type="file" id="fileInput" accept=".pdf,.epub,.csv">
+  <button onclick="upload()">Enviar</button>
+  <div id="status"></div>
+
+  <script>
+    async function upload() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert('Selecione um arquivo');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      document.getElementById('status').textContent = 'Processando...';
+
+      const response = await fetch('http://localhost:3000/documents/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        document.getElementById('status').innerHTML = `
+          ✅ Sucesso!<br>
+          ID: ${result.data.documentId}<br>
+          Chunks: ${result.data.chunksCount}
+        `;
+      } else {
+        document.getElementById('status').textContent = '❌ Erro: ' + result.message;
+      }
+    }
+  </script>
+</body>
+
+</html>

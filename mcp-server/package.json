@@ -1,0 +1,27 @@
+{
+  "name": "rag-sergin-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server that exposes rag-sergin RAG capabilities to Claude Code",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "keywords": ["mcp", "rag", "model-context-protocol"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "axios": "^1.7.9",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24.13.1"
+  }
+}

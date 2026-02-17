@@ -1,0 +1,9 @@
+node_modules
+.env
+.DS_Store
+.agent
+uploads
+mcp-server/node_modules
+mcp-server/.env
+mcp-server/dist
+dist

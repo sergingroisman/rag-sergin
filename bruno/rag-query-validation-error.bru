@@ -1,0 +1,22 @@
+meta {
+  name: RAG Query - Validation Error (empty question)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/rag
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "question": "",
+    "topK": 3
+  }
+}
+
+assert {
+  res.status: eq 400
+}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>RAG Streaming - Gemini</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    #question {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #357ae8;
+    }
+    #response {
+      margin-top: 20px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      min-height: 100px;
+      white-space: pre-wrap;
+      border: 1px solid #ddd;
+    }
+    #sources {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-size: 12px;
+      border: 1px solid #90caf9;
+    }
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 RAG Streaming com Gemini</h1>
+
+  <input
+    type="text"
+    id="question"
+    placeholder="Digite sua pergunta sobre os documentos..."
+    value="Qual é a diferença entre type e interface no TypeScript?"
+  />
+
+  <button onclick="startStream()">Enviar</button>
+
+  <div id="response" class="loading">Resposta aparecerá aqui...</div>
+  <div id="sources"></div>
+
+  <script>
+    function startStream() {
+      const question = document.getElementById('question').value;
+      const responseDiv = document.getElementById('response');
+      const sourcesDiv = document.getElementById('sources');
+
+      // Reset
+      responseDiv.textContent = '';
+      responseDiv.className = 'loading';
+      sourcesDiv.textContent = '';
+
+      // SSE não suporta POST com corpo, então usamos fetch
+      fetch('http://localhost:3000/rag/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question }),
+      })
+      .then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        function read() {
+          reader.read().then(({ done, value }) => {
+            if (done) return;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            lines.forEach(line => {
+              if (line.startsWith('data: ')) {
+                const data = JSON.parse(line.substring(6));
+
+                if (data.type === 'sources') {
+                  sourcesDiv.innerHTML = '<strong>📚 Fontes:</strong><br>' +
+                    data.content.map(s =>
+                      `${s.fileName} (chunk ${s.chunkIndex}, score: ${s.score.toFixed(2)})`
+                    ).join('<br>');
+                }
+
+                if (data.type === 'token') {
+                  responseDiv.className = '';
+                  responseDiv.textContent += data.content;
+                }
+
+                if (data.type === 'done') {
+                  console.log('✅ Stream concluído');
+                }
+              }
+            });
+
+            read();
+          });
+        }
+
+        read();
+      })
+      .catch(error => {
+        responseDiv.textContent = 'Erro: ' + error.message;
+        responseDiv.className = '';
+      });
+    }
+  </script>
+</body>
+</html>

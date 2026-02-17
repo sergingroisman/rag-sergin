@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.next/
+dist/
+build/
+.venv/
+__pycache__/
+
+# Configs
+.env*
+*.lock
+package-lock.json
+yarn.lock
+
+# Dados grandes
+*.csv
+*.json  # Exceto PROGRESS.json e package.json
+*.log
+*.sql  # Exceto schema
+
+# Media
+*.png
+*.jpg
+*.mp4
+
+# Testes (carregar sob demanda)
+*.test.*
+*.spec.*
+__tests__/
