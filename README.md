@@ -1,11 +1,11 @@
-# 🤖 RAG Sergin - Sistema RAG com Gemini
+# 🤖 RAG Sergin - Sistema RAG com DeepSeek & Local Embeddings
 
-Sistema de Retrieval-Augmented Generation (RAG) usando **Gemini** para embeddings e geração de respostas, adaptado do rag-api.
+Sistema de Retrieval-Augmented Generation (RAG) usando **DeepSeek** para geração de respostas e **HuggingFace Local Embeddings** para vetorização.
 
 ## 🎯 Características
 
-- ✅ **Gemini embeddings** (3072 dimensões, free tier)
-- ✅ **Gemini 2.5 Flash** para geração de respostas (grátis e rápido)
+- ✅ **Local Embeddings** (Xenova/bge-small-en-v1.5, offline)
+- ✅ **DeepSeek V3** (deepseek-chat) para geração de respostas (rápido e econômico)
 - ✅ **Streaming SSE** em tempo real
 - ✅ **Express API** com validação Zod
 - ✅ **Qdrant** para busca vetorial
@@ -16,7 +16,7 @@ Sistema de Retrieval-Augmented Generation (RAG) usando **Gemini** para embedding
 
 ```
 src/
-├── config.ts                 # Configurações (GOOGLE_API_KEY, Qdrant, etc)
+├── config.ts                 # Configurações (DEEPSEEK_API_KEY, Qdrant, etc)
 ├── types.ts                  # Tipos TypeScript
 ├── index.ts                  # Servidor Express principal
 ├── middleware/
@@ -28,14 +28,27 @@ src/
 ├── schemas/
 │   └── index.ts             # Schemas Zod
 └── services/
-    ├── gemini.ts            # Configuração Gemini (embeddings + LLM)
+    ├── providers.ts         # Configuração AI (DeepSeek + Local Embeddings)
     ├── qdrant.ts            # Cliente Qdrant
     ├── query.ts             # Serviço de busca vetorial
     └── rag.ts               # Serviço RAG (query + stream)
 
 sample/
 └── chat.html                # Interface de teste
+
+bruno/                       # Coleção de requests para o Bruno Client
+├── documents/               # Upload, processamento de URL, Stats
+├── rag/                     # RAG Query, Validação, Stream
+└── vectors/                 # Busca Vetorial
 ```
+
+## 📁 Coleção Bruno
+
+O projeto inclui uma coleção pronta para o **[Bruno API Client](https://www.usebruno.com/)**.
+
+1. Instale o Bruno.
+2. Abra a pasta `bruno/` como uma coleção (`Open Collection`).
+3. Use os requests pré-configurados para testar a API rapidamente.
 
 ## 🚀 Como Usar
 
@@ -50,7 +63,7 @@ npm install
 Certifique-se que seu `.env` tem:
 
 ```env
-GOOGLE_API_KEY=sua_chave_aqui
+DEEPSEEK_API_KEY=sua_chave_aqui
 QDRANT_URL=http://localhost:6333
 QDRANT_COLLECTION_NAME=documents
 SERVER_PORT=3000
@@ -175,6 +188,30 @@ curl -X POST http://localhost:3000/query \
 }
 ```
 
+### 4. Upload de Documentos
+
+```bash
+curl -X POST http://localhost:3000/documents/upload \
+  -F "file=@/caminho/para/arquivo.pdf"
+```
+
+### 5. Processar URL
+
+```bash
+curl -X POST http://localhost:3000/documents/from-url \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://pt.wikipedia.org/wiki/Solid_(orientação_a_objetos)",
+    "scraperEngine": "cheerio"
+  }'
+```
+
+### 6. Estatísticas da Coleção
+
+```bash
+curl http://localhost:3000/documents/stats
+```
+
 ## 📄 Adicionar Novos Documentos
 
 Atualmente o sistema usa o documento já processado (`Arquitetura-Limpa.pdf`). Para adicionar novos:
@@ -192,9 +229,9 @@ await processDocument({
 });
 ```
 
-### Opção 2: Upload via API (próximo passo)
+### Opção 2: Upload via API (Recomendado)
 
-Será implementado em `routes/document.ts` para upload de PDF/EPUB/CSV.
+Use o endpoint `/documents/upload` para enviar arquivos PDF diretamente, ou `/documents/from-url` para processar páginas web. Use a coleção do **Bruno** para facilitar.
 
 ## 🎨 Personalizar Prompts
 
@@ -217,14 +254,12 @@ const RAG_PROMPT_TEMPLATE = ChatPromptTemplate.fromMessages([
 
 ## 🔧 Configurações Avançadas
 
-### Ajustar modelo Gemini
-
-Em `src/services/gemini.ts`:
+Em `src/services/providers.ts`:
 
 ```typescript
-export const llm = new ChatGoogleGenerativeAI({
-  model: "gemini-2.5-flash",  // ou "gemini-2.5-pro"
-  temperature: 0,              // 0 = determinístico, 1 = criativo
+export const llm = new ChatDeepSeek({
+  model: "deepseek-chat",
+  temperature: 0,
 });
 ```
 
@@ -242,15 +277,17 @@ topK: z.number()
 ## 📊 Status
 
 ✅ **Funcionando:**
-- RAG com Gemini
+- RAG com DeepSeek
+- Local Embeddings (offline)
 - Streaming SSE
 - Busca vetorial
 - Chat interface
 - Validação de inputs
 - Error handling
+- Upload de documentos via API (PDF)
+- Processamento de URLs (Web Scraping)
 
 🚧 **Próximos passos:**
-- Upload de documentos via API
 - Suporte a EPUB
 - Suporte a CSV
 - Métricas e logging
@@ -258,11 +295,11 @@ topK: z.number()
 
 ## 🐛 Troubleshooting
 
-### Erro: "GOOGLE_API_KEY is not set"
+### Erro: "DEEPSEEK_API_KEY is not set"
 
 Configure no `.env`:
 ```env
-GOOGLE_API_KEY=sua_chave_aqui
+DEEPSEEK_API_KEY=sua_chave_aqui
 ```
 
 ### Erro: "Coleção não existe"

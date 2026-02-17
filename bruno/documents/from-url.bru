@@ -1,0 +1,18 @@
+meta {
+  name: Process from URL
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/documents/from-url
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "url": "https://example.com",
+    "scraperEngine": "cheerio"
+  }
+}

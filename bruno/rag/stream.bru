@@ -1,0 +1,18 @@
+meta {
+  name: RAG Stream
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/rag/stream
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "question": "What is clean architecture?",
+    "topK": 3
+  }
+}
